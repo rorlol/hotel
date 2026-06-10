@@ -18,8 +18,14 @@ class UserProfile(AbstractUser):
 class Country(models.Model):
     country_name = models.CharField(max_length=32, unique=True)
 
+    def __str__(self):
+        return self.country_name
+
 class City(models.Model):
     city_name = models.CharField(max_length=32)
+
+    def __str__(self):
+        return self.city_name
 
 class Service(models.Model):
     service_icon = models.ImageField(upload_to='service_icon/')
@@ -34,12 +40,15 @@ class Hotel(models.Model):
     service = models.ManyToManyField(Service)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.hotel_name
+
 class ImageHotel(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='images_hotel')
     image = models.ImageField(upload_to='images_hotel/')
 
 class Room(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='room')
     room_number = models.PositiveSmallIntegerField(default=0)
     room_image = models.ImageField(upload_to='room_images/')
     ROOM_TYPE = (
@@ -55,6 +64,8 @@ class Room(models.Model):
     )
     room_status = models.CharField(max_length=15, choices=ROOM_STATUS, default='Свободен')
     price = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateField(auto_now_add=True)
+
 
 class ImageRoom(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
@@ -62,7 +73,7 @@ class ImageRoom(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='review')
     comment = models.TextField(null=True, blank=True)
     stars = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1,11)], null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

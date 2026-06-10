@@ -9,17 +9,17 @@ class ImageRoomInline(admin.TabularInline):
     model = ImageRoom
     extra = 1
 
-class Admin(admin.ModelAdmin):
-    inlines = [ImageHotelInline,ImageRoomInline]
+class HotelAdmin(admin.ModelAdmin):
+    inlines = [ImageHotelInline]
 
+class RoomAdmin(admin.ModelAdmin):
+    inlines = [ImageRoomInline]
 
 admin.site.register(UserProfile)
 admin.site.register(Country)
 admin.site.register(City)
 admin.site.register(Service)
-admin.site.register(Hotel)
-#admin.site.register(ImageHotel)
-admin.site.register(Room)
-#admin.site.register(ImageRoom)
+admin.site.register(Hotel,HotelAdmin)
+admin.site.register(Room,RoomAdmin)
 admin.site.register(Review)
 admin.site.register(BookingHotel)

@@ -33,7 +33,7 @@ class Service(models.Model):
 
 class Hotel(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='hotel')
     hotel_name = models.CharField(max_length=32)
     hotel_image = models.ImageField(upload_to='hotel_images/')
     description = models.TextField()
@@ -42,6 +42,18 @@ class Hotel(models.Model):
 
     def __str__(self):
         return self.hotel_name
+
+    def get_avg_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return sum([i.stars for i in reviews]) / reviews.count()
+        return 0
+
+    def get_count_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return reviews.count()
+        return 0
 
 class ImageHotel(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='images_hotel')
@@ -68,12 +80,12 @@ class Room(models.Model):
 
 
 class ImageRoom(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE,related_name='room_images')
     image = models.ImageField(upload_to='images_room/')
 
 class Review(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='review')
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,related_name='reviews')
     comment = models.TextField(null=True, blank=True)
     stars = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1,11)], null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
